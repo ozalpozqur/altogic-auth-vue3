@@ -5,12 +5,15 @@
 				<img class="object-cover w-full h-full" :src="userPicture" :alt="auth.user.name" />
 			</picture>
 		</figure>
-		<div class="flex justify-center">
+		<div class="flex flex-col gap-4 justify-center items-center">
 			<label class="border p-2 cursor-pointer">
 				<span v-if="loading">Uploading...</span>
 				<span v-else>Change Avatar</span>
 				<input :disabled="loading" class="hidden" type="file" accept="image/*" @change="changeHandler" />
 			</label>
+			<div class="bg-red-500 p-2 text-white" v-if="errors">
+				{{ errors }}
+			</div>
 		</div>
 	</div>
 </template>
@@ -32,12 +35,13 @@ async function changeHandler(e) {
 	e.target.value = null;
 	if (!file) return;
 	loading.value = true;
+	errors.value = null;
 	try {
 		const { publicPath } = await uploadAvatar(file);
 		const user = await updateUser({ profilePicture: publicPath });
 		auth.setUser(user);
 	} catch (error) {
-		errors.value = error;
+		errors.value = error.message;
 	} finally {
 		loading.value = false;
 	}
@@ -46,14 +50,14 @@ async function changeHandler(e) {
 async function uploadAvatar(file) {
 	const { data, errors } = await altogic.storage.bucket('root').upload(file.name, file);
 	if (errors) {
-		throw new Error("Couldn't upload avatar");
+		throw new Error("Couldn't upload avatar, please try again later");
 	}
 	return data;
 }
 async function updateUser(data) {
 	const { data: user, errors } = await altogic.db.model('users').object(auth.user._id).update(data);
 	if (errors) {
-		throw new Error("Couldn't update user");
+		throw new Error("Couldn't update user, please try again later");
 	}
 	return user;
 }
