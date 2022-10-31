@@ -28,6 +28,36 @@ If you are new to Vue applications, this tutorial is definitely for you to under
 * Basic knowledge of Vue 3 Composition API
 * Basic knowledge of Vue Router 4
 
+## Creating an Altogic App
+We will use Altogic as a backend service platform, so let’s visit [Altogic Designer](https://designer.altogic.com/) and create an account.
+
+After creating an account, you will see the workspace where you can access your apps.
+
+![Application](public/github/1-applications.png)
+
+Click + New app and follow the instructions;
+
+1. In the App name field, enter a name for the app.
+2. Enter your subdomain.
+3. Choose the deployment location.
+4. And select your free execution environment pricing plan.
+
+![Create App](public/github/2-create-app.png)
+
+Then click Next and select Basic Authentication template. This template is based on session authentication and highly recommended to secure your apps.
+
+![Choose Template](public/github/3-choose-template.png)
+
+Then click Next to confirm and create an app. Also, here we can see some of the details the about the application. Let’s click Create to finish the application creation process.
+
+Awesome! We have created our application; now click/tap on the <strong>newly created app to launch the Designer.</strong>
+
+> This is the only configuration we need to do in Altogic Designer. Still to access the app and use the Altogic client library, we should get envUrl and clientKey of this app.
+
+Click the <strong>Home</strong> icon at the left sidebar to copy the envUrl and clientKey.
+
+![Client Keys](public/github/4-client-keys.png)
+
 ## Create a Vue 3 project
 Make sure you have an up-to-date version of Node.js installed, then run the following command in your command line
 ```bash
@@ -35,7 +65,7 @@ npm init vue@latest
 ```
 
 I showed you which options to choose in the image I will give you below. You can choose the same options as I did. 
-![Alt text](./public/terminal-preview.png "terminal preview")
+![Alt text](public/github/terminal-preview.png "terminal preview")
 
 Then paste the code below into terminal and press enter.
 
@@ -44,7 +74,7 @@ Then paste the code below into terminal and press enter.
 ```
 ## Open the project in your editor or IDE and Start Coding
 Select your favorite editor or IDE. I will use VSCode. You can use anything you want.
-![Alt text](./public/vscode.png "vscode preview")
+![Alt text](public/github/vscode.png "vscode preview")
 
 Let's create some views in src/views folder as below for vue-router
 * HomeView.vue
@@ -53,7 +83,7 @@ Let's create some views in src/views folder as below for vue-router
 * ProfileView.vue
 * AuthRedirectView.vue
 
-![Alt text](./public/views-folder.png "vscode preview")
+![Alt text](public/github/views-folder.png "vscode preview")
 
 ## Let's create an Altogic Client instance
 Create a folder named **libs** in the **src** folder of your project and put a file named **altogic.js** in it. Then paste the code below into the file.
@@ -71,7 +101,6 @@ const altogic = createClient(ENV_URL, CLIENT_KEY, {
 });
 
 export default altogic;
-
 ```
 
 ## Let's create authentication store
@@ -108,7 +137,6 @@ export const useAuthStore = defineStore('auth', () => {
 
 	return { user, session, setUser, setSession, logout };
 });
-
 ```
 
 ## Let's create router
@@ -244,7 +272,6 @@ async function loginHandler() {
 		</form>
 	</section>
 </template>
-
 ```
 
 **src/views/RegisterView.vue**
@@ -395,7 +422,7 @@ const auth = useAuthStore();
 ### Create an Avatar component
 Let's create a Vue component for user can upload a profile photo.
 ```vue
-// src/components/Avatar.vue
+<!-- src/components/Avatar.vue -->
 <template>
 	<div>
 		<figure class="flex flex-col gap-4 items-center justify-center py-2">
@@ -465,7 +492,7 @@ async function updateUser(data) {
 ### Use the Avatar component on the profile view
 And then we can add the component to the Profile page
 ```vue
-// src/views/ProfileView.vue
+<!-- src/views/ProfileView.vue -->
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import Avatar from '@/components/Avatar.vue';
@@ -480,3 +507,8 @@ const auth = useAuthStore();
 	</section>
 </template>
 ```
+
+## Conclusion
+Congratulations!✨
+
+You had completed the most critical part of the Authentication flow, which includes private routes, sign-up, sign-in, and sign-out operations.
