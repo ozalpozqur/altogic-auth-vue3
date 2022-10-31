@@ -24,7 +24,6 @@ If you are new to Vue applications, this tutorial is definitely for you to under
 * Node.js version 16.0 or higher
 * Altogic account
 * Basic knowledge of Javascript
-* Basic knowledge of HTML and CSS
 * Basic knowledge of Vue 3
 * Basic knowledge of Vue 3 Composition API
 * Basic knowledge of Vue Router 4
