@@ -7,8 +7,8 @@ import { useRouter } from 'vue-router';
 const auth = useAuthStore();
 const router = useRouter();
 const loading = ref(false);
-const email = ref('ozgurozalp1999@gmail.com');
-const password = ref('123456789');
+const email = ref('');
+const password = ref('');
 const errors = ref(null);
 
 async function loginHandler() {
