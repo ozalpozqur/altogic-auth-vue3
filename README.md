@@ -1,9 +1,9 @@
-# Altogic Auth Sample with Vue3
+# Authentication with Vue.js & Altogic
 
 ## Introduction
 **Altogic** is a Backend as a Service (BaaS) platform and provides a variety of services in modern web and mobile development. Most of the modern applications using React or other libraries/frameworks require to know the identity of a user. And this necessity allows an app to securely save user data and session in the cloud and provide more personalized functionalities and views to users.
 
-Altogic has an Authentication service that integrates and implements well in JAMstack apps. It has a ready-to-use Javascript client library, and it supports many authentication providers such as email/password, phone number, magic link, and providers like Google, Facebook, Twitter, Github, etc.,
+Altogic has an Authentication service that integrates and implements well in JAMstack apps. It has a ready-to-use Javascript client library, and it supports many authentication providers such as email/password, phone number, magic link, and OAuth providers like Google, Facebook, Twitter, Github, etc.,
 
 In this tutorial, we will implement email/password authentication with Vue.js and take a look how as a Vue developer we build applications and integrate with Altogic Authentication.
 
@@ -13,6 +13,8 @@ After completion of this tutorial, you will learn:
 * How to create a home screen and authorize only logged-in users.
 * How to create different routes using the vue-router.
 * How to create an authentication flow by conditionally rendering between these pages whether a user is logged-in or not.
+* How to authenticate users using magic link
+* How to update user profile info and upload a profile picture
 * And we will integrate Altogic authentication with the email/password method.
   
 If you are new to Vue applications, this tutorial is definitely for you to understand the basics and even advanced concepts.
@@ -30,10 +32,9 @@ If you are new to Vue applications, this tutorial is definitely for you to under
 
 ## Creating an Altogic App
 We will use Altogic as a backend service platform, so let’s visit [Altogic Designer](https://designer.altogic.com/) and create an account.
+![Application](public/github/1-applications.png)
 
 After creating an account, you will see the workspace where you can access your apps.
-
-![Application](public/github/1-applications.png)
 
 Click + New app and follow the instructions;
 
@@ -44,19 +45,36 @@ Click + New app and follow the instructions;
 
 ![Create App](public/github/2-create-app.png)
 
-Then click Next and select Basic Authentication template. This template is based on session authentication and highly recommended to secure your apps.
+Then click Next and select Basic Authentication template. This template is creates a default user model for your app which is required by [Altogic Client Library](https://github.com/altogic/altogic-js) to store user data and manage authentication.
 
+Then click Next and select Basic Authentication template. This template is based on session authentication and highly recommended to secure your apps.
 ![Choose Template](public/github/3-choose-template.png)
 
-Then click Next to confirm and create an app. Also, here we can see some of the details the about the application. Let’s click Create to finish the application creation process.
+Then click Next to confirm and create an app.
 
-Awesome! We have created our application; now click/tap on the <strong>newly created app to launch the Designer.</strong>
+Awesome! We have created our application; now click/tap on the **newly created app to launch the Designer.**
 
-> This is the only configuration we need to do in Altogic Designer. Still to access the app and use the Altogic client library, we should get envUrl and clientKey of this app.
-
-Click the <strong>Home</strong> icon at the left sidebar to copy the envUrl and clientKey.
+> This is the only configuration we need to do in Altogic Designer. In order to access the app and use the Altogic client library, we should get envUrl and clientKey of this app.
+Click the **Home** icon at the left sidebar to copy the envUrl and clientKey.
 
 ![Client Keys](public/github/4-client-keys.png)
+
+## How email based sign-up works in Altogic
+Here are Login and Signup components to collect information from the user.
+
+![Authentication Flow](public/github/7-authentication-flow.png)
+
+Once the user created successfully, our Vue.js app will route the user to the Verification page, and a verification email will be sent to the user’s email address. When the user clicks the link in the mail, the user will navigate to the redirect page to grant authentication rights. After successfully creating a session on the Redirect page, users will be redirected to the Home page.
+
+## Customize Email Verification
+You can disable the email verification,
+
+![Authentication Settings](public/github/8-auth-settings.png)
+
+or you can customize the template.
+
+![Email Template](public/github/9-mail-template.png)
+
 
 ## Create a Vue 3 project
 Make sure you have an up-to-date version of Node.js installed, then run the following command in your command line
@@ -512,3 +530,6 @@ const auth = useAuthStore();
 Congratulations!✨
 
 You had completed the most critical part of the Authentication flow, which includes private routes, sign-up, sign-in, and sign-out operations.
+
+If you have any questions about Altogic or want to share what you have built, please post a message in our [community forum](https://community.altogic.com/home) or [discord channel](https://discord.gg/zDTnDPBxRz).
+
