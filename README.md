@@ -21,10 +21,10 @@ If you are new to Vue applications, this tutorial is definitely for you to under
 
 
 ## Prerequisites
+* Altogic account (if you have not one yet, you can create an account by sign-in up to **Altogic**)
 * Familiarity with the command line
 * Any text editor or IDE (WebStorm, VsCode, Sublime, Atom, etc.)
 * Node.js version 16.0 or higher
-* Altogic account
 * Basic knowledge of Javascript
 * Basic knowledge of Vue 3
 * Basic knowledge of Vue 3 Composition API
