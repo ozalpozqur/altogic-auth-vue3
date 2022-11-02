@@ -154,53 +154,58 @@ import HomeView from '../views/HomeView.vue';
 import { useAuthStore } from '@/stores/auth';
 
 const router = createRouter({
-	history: createWebHistory(import.meta.env.BASE_URL),
-	routes: [
-		{
-			path: '/',
-			name: 'home',
-			component: HomeView,
-			meta: { requiresGuest: true },
-		},
-		{
-			path: '/profile',
-			name: 'profile',
-			component: () => import('../views/ProfileView.vue'),
-			meta: { requiresAuth: true },
-		},
-		{
-			path: '/login',
-			name: 'login',
-			component: () => import('../views/LoginView.vue'),
-			meta: { requiresGuest: true },
-		},
-		{
-			path: '/register',
-			name: 'register',
-			component: () => import('../views/RegisterView.vue'),
-			meta: { requiresGuest: true },
-		},
-		{
-			path: '/auth-redirect',
-			name: 'auth-redirect',
-			component: () => import('../views/AuthRedirectView.vue'),
-			meta: { requiresGuest: true },
-		},
-	],
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
+        {
+            path: '/',
+            name: 'home',
+            component: HomeView,
+            meta: { requiresGuest: true },
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: () => import('../views/ProfileView.vue'),
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: () => import('../views/LoginView.vue'),
+            meta: { requiresGuest: true },
+        },
+        {
+            path: '/login-with-magic-link',
+            name: 'magic-login',
+            component: () => import('../views/LoginWithMagicLinkView.vue'),
+            meta: { requiresGuest: true },
+        },
+        {
+            path: '/register',
+            name: 'register',
+            component: () => import('../views/RegisterView.vue'),
+            meta: { requiresGuest: true },
+        },
+        {
+            path: '/auth-redirect',
+            name: 'auth-redirect',
+            component: () => import('../views/AuthRedirectView.vue'),
+            meta: { requiresGuest: true },
+        },
+    ],
 });
-
 router.beforeEach((to, from) => {
-	const auth = useAuthStore();
-	if (to.meta.requiresAuth && !auth.user) {
-		return {
-			name: 'login',
-		};
-	}
-	if (to.meta.requiresGuest && auth.user) {
-		return {
-			name: 'profile',
-		};
-	}
+    const auth = useAuthStore();
+    if (to.meta.requiresAuth && !auth.user) {
+        return {
+            name: 'login',
+        };
+    }
+    if (to.meta.requiresGuest && auth.user) {
+        return {
+            name: 'profile',
+        };
+    }
 });
 
 export default router;
@@ -214,11 +219,13 @@ If everything is ok, replace the codes I will give you with the ones in your pro
 ```vue
 <!-- src/views/HomeView.vue -->
 <template>
-	<div class="flex items-center justify-center gap-4 h-screen">
-		<router-link class="border px-4 py-2 font-medium text-xl" :to="{ name: 'login' }">Login</router-link>
-		<router-link class="border px-4 py-2 font-medium text-xl" :to="{ name: 'register' }">Register</router-link>
-	</div>
+    <div class="flex items-center justify-center gap-4 h-screen">
+        <router-link class="border px-4 py-2 font-medium text-xl" :to="{ name: 'magic-login' }">Login With Magic Link</router-link>
+        <router-link class="border px-4 py-2 font-medium text-xl" :to="{ name: 'login' }">Login</router-link>
+        <router-link class="border px-4 py-2 font-medium text-xl" :to="{ name: 'register' }">Register</router-link>
+    </div>
 </template>
+
 ```
 
 ### Login Page
