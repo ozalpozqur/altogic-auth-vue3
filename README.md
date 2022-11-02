@@ -320,7 +320,6 @@ async function registerHandler() {
 		session,
 		errors: apiErrors,
 	} = await altogic.auth.signUpWithEmail(email.value, password.value, name.value);
-	console.log(user, session, apiErrors);
 
 	if (apiErrors) {
 		errors.value = apiErrors;
