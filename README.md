@@ -76,7 +76,7 @@ I showed you which options to choose in the image I will give you below. You can
 Then paste the code below into terminal and press enter.
 
 ```bash
-    cd altogic-auth-example && npm i altogic && npm run dev
+cd altogic-auth-example && npm i altogic && npm run dev
 ```
 ## Open the project in your editor or IDE and Start Coding
 Select your favorite editor or IDE. I will use VSCode. You can use anything you want.
