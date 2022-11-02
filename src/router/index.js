@@ -24,6 +24,12 @@ const router = createRouter({
 			meta: { requiresGuest: true },
 		},
 		{
+			path: '/login-with-magic-link',
+			name: 'magic-login',
+			component: () => import('../views/LoginWithMagicLinkView.vue'),
+			meta: { requiresGuest: true },
+		},
+		{
 			path: '/register',
 			name: 'register',
 			component: () => import('../views/RegisterView.vue'),

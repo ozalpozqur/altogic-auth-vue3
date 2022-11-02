@@ -61,11 +61,11 @@ async function registerHandler() {
 			<input v-model="email" type="email" placeholder="Type your email" required />
 			<input v-model="name" type="text" placeholder="Type your name" required />
 			<input v-model="password" type="password" placeholder="Type your password" required />
-			<div class="flex justify-between gap-2">
+			<div class="flex justify-between gap-4">
 				<router-link class="text-indigo-600" :to="{ name: 'login' }">Already have an account?</router-link>
 				<button
 					type="submit"
-					class="border py-2 px-3 border-gray-500 hover:bg-gray-500 hover:text-white transition"
+					class="border py-2 px-3 border-gray-500 hover:bg-gray-500 hover:text-white transition shrink-0"
 				>
 					Register
 				</button>

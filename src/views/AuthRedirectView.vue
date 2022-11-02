@@ -8,24 +8,20 @@ const auth = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const errors = ref(null);
-const { status, access_token, action } = route.query;
+const { access_token } = route.query;
 
 onMounted(() => {
 	loginWithToken();
 });
 
 async function loginWithToken() {
-	if (status === '200' && access_token && action === 'email-confirm') {
-		const { user, session, errors: apiErrors } = await altogic.auth.getAuthGrant(access_token);
-		if (!apiErrors) {
-			auth.setSession(session);
-			auth.setUser(user);
-			await router.push({ name: 'profile' });
-		} else {
-			errors.value = apiErrors;
-		}
+	const { user, session, errors: apiErrors } = await altogic.auth.getAuthGrant(access_token);
+	if (!apiErrors) {
+		auth.setSession(session);
+		auth.setUser(user);
+		await router.push({ name: 'profile' });
 	} else {
-		await router.push({ name: 'home' });
+		errors.value = apiErrors;
 	}
 }
 </script>
