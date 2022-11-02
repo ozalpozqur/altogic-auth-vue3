@@ -478,7 +478,7 @@ async function loginWithToken() {
 			<p class="text-3xl">You're redirecting to your profile...</p>
 		</div>
 		<div class="text-center text-red-500 text-3xl" v-else>
-			<p v-for="(error, index) in errors.items">{{ error.message }}</p>
+			<p :key="index" v-for="(error, index) in errors.items">{{ error.message }}</p>
 		</div>
 	</section>
 </template>
