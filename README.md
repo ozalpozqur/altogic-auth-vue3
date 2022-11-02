@@ -222,7 +222,7 @@ export default router;
 ## Replacing the remaining files
 If everything is ok, replace the codes I will give you with the ones in your project.
  
-**src/views/HomeView.vue**
+### Home Page
 ```vue
 <!-- src/views/HomeView.vue -->
 <template>
@@ -233,7 +233,7 @@ If everything is ok, replace the codes I will give you with the ones in your pro
 </template>
 ```
 
-**src/views/LoginView.vue**
+### Login Page
 ```vue
 <!-- src/views/LoginView.vue -->
 <script setup>
@@ -292,7 +292,65 @@ async function loginHandler() {
 </template>
 ```
 
-**src/views/RegisterView.vue**
+### Login With Magic Link Page
+```vue
+<!-- src/views/LoginWithMagicLinkView.vue -->
+<script setup>
+import { ref } from 'vue';
+import altogic from '@/libs/altogic';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const successMessage = ref('');
+const loading = ref(false);
+const email = ref('');
+const errors = ref(null);
+
+async function loginHandler() {
+    loading.value = true;
+    errors.value = null;
+    const { errors: apiErrors } = await altogic.auth.sendMagicLinkEmail(email.value);
+    loading.value = false;
+    if (apiErrors) {
+        errors.value = apiErrors;
+    } else {
+        email.value = '';
+        successMessage.value = 'Email sent! Check your inbox.';
+    }
+}
+</script>
+
+<template>
+    <section class="flex flex-col items-center justify-center h-96 gap-4">
+        <form @submit.prevent="loginHandler" class="flex flex-col gap-2 w-full md:w-96">
+            <h1 class="self-start text-3xl font-bold">Login with magic link</h1>
+            <div v-if="successMessage" class="bg-green-600 text-white text-[13px] p-2">
+                {{ successMessage }}
+            </div>
+            <div v-if="errors" class="bg-red-600 text-white text-[13px] p-2">
+                <p v-for="(error, index) in errors.items" :key="index">{{ error.message }}</p>
+            </div>
+
+            <input v-model="email" type="email" placeholder="Type your email" required />
+            <div class="flex justify-between gap-4 items-start">
+                <router-link class="text-indigo-600" :to="{ name: 'register' }"
+                >Don't have an account? Register now</router-link
+                >
+                <button
+                    :disabled="loading"
+                    type="submit"
+                    class="border py-2 px-3 border-gray-500 hover:bg-gray-500 hover:text-white transition shrink-0"
+                >
+                    Send magic link
+                </button>
+            </div>
+        </form>
+    </section>
+</template>
+```
+
+### Register Page
 ```vue
 <!-- src/views/RegisterView.vue -->
 <script setup>
@@ -371,54 +429,7 @@ async function registerHandler() {
 </template>
 ```
 
-**src/views/AuthRedirectView.vue**
-```vue
-<!-- src/views/AuthRedirectView.vue -->
-<script setup>
-import { useAuthStore } from '@/stores/auth';
-import { useRoute, useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
-import altogic from '@/libs/altogic';
-
-const auth = useAuthStore();
-const route = useRoute();
-const router = useRouter();
-const errors = ref(null);
-const { status, access_token, action } = route.query;
-
-onMounted(() => {
-	loginWithToken();
-});
-
-async function loginWithToken() {
-	if (status === '200' && access_token && action === 'email-confirm') {
-		const { user, session, errors: apiErrors } = await altogic.auth.getAuthGrant(access_token);
-		if (!apiErrors) {
-			auth.setSession(session);
-			auth.setUser(user);
-			await router.push({ name: 'profile' });
-		} else {
-			errors.value = apiErrors;
-		}
-	} else {
-		await router.push({ name: 'home' });
-	}
-}
-</script>
-<template>
-	<section class="h-screen flex flex-col gap-4 justify-center items-center">
-		<div class="text-center" v-if="!errors">
-			<p class="text-6xl">Please wait</p>
-			<p class="text-3xl">You're redirecting to your profile...</p>
-		</div>
-		<div class="text-center text-red-500 text-3xl" v-else>
-			<p v-for="(error, index) in errors.items">{{ error.message }}</p>
-		</div>
-	</section>
-</template>
-```
-
-**src/views/ProfileView.vue**
+### Profile Page
 ```vue
 <!-- src/views/ProfileView.vue -->
 <script setup>
@@ -434,9 +445,52 @@ const auth = useAuthStore();
 </template>
 ```
 
-## Bonus: Profile photos
+### Auth Redirect Page
+We use this page for verify the user's email address and **Login With Magic Link Authentication**.
+```vue
+<!-- src/views/AuthRedirectView.vue -->
+<script setup>
+import { useAuthStore } from '@/stores/auth';
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import altogic from '@/libs/altogic';
 
-### Create an Avatar component
+const auth = useAuthStore();
+const route = useRoute();
+const router = useRouter();
+const errors = ref(null);
+const { access_token } = route.query;
+
+onMounted(() => {
+  loginWithToken();
+});
+
+async function loginWithToken() {
+  const { user, session, errors: apiErrors } = await altogic.auth.getAuthGrant(access_token);
+  if (!apiErrors) {
+    auth.setSession(session);
+    auth.setUser(user);
+    await router.push({ name: 'profile' });
+  } else {
+    errors.value = apiErrors;
+  }
+}
+</script>
+<template>
+  <section class="h-screen flex flex-col gap-4 justify-center items-center">
+    <div class="text-center" v-if="!errors">
+      <p class="text-6xl">Please wait</p>
+      <p class="text-3xl">You're redirecting to your profile...</p>
+    </div>
+    <div class="text-center text-red-500 text-3xl" v-else>
+      <p v-for="(error, index) in errors.items">{{ error.message }}</p>
+    </div>
+  </section>
+</template>
+
+```
+
+## Upload Profile Photo
 Let's create a Vue component for user can upload a profile photo.
 ```vue
 <!-- src/components/Avatar.vue -->
@@ -506,7 +560,7 @@ async function updateUser(data) {
 </script>
 ```
 
-### Use the Avatar component on the profile view
+## Use the Avatar component on the profile view
 And then we can add the component to the Profile page
 ```vue
 <!-- src/views/ProfileView.vue -->
