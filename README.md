@@ -59,22 +59,10 @@ Click the **Home** icon at the left sidebar to copy the envUrl and clientKey.
 
 ![Client Keys](public/github/4-client-keys.png)
 
-## How email based sign-up works in Altogic
-Here are Login and Signup components to collect information from the user.
-
-![Authentication Flow](public/github/7-authentication-flow.png)
-
 Once the user created successfully, our Vue.js app will route the user to the Verification page, and a verification email will be sent to the user’s email address. When the user clicks the link in the mail, the user will navigate to the redirect page to grant authentication rights. After successfully creating a session on the Redirect page, users will be redirected to the Home page.
 
-## Customize Email Verification
-You can disable the email verification,
-
-![Authentication Settings](public/github/8-auth-settings.png)
-
-or you can customize the template.
-
-![Email Template](public/github/9-mail-template.png)
-
+## Quick Tip
+> If you want, you can deactivate or customize the mail verification from **App Settings -> Authentication** in Logic Designer.
 
 ## Create a Vue 3 project
 Make sure you have an up-to-date version of Node.js installed, then run the following command in your command line
