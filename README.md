@@ -30,6 +30,14 @@ If you are new to Vue applications, this tutorial is definitely for you to under
 * Basic knowledge of Vue 3 Composition API
 * Basic knowledge of Vue Router 4
 
+## How email-based sign-up works in Altogic
+By default, when you create an app in Altogic, email-based authentication is enabled. In addition, during email-based authentication, the email address of the user is also verified. Below you can find the flow of email and password-based sign-up process.
+
+![Authentication Flow](public/github/auth-flow.png)
+
+If email verification is disabled, then after step 2, Altogic immediately returns a new session to the user, meaning that steps after step #2 in the above flow are not executed. You can easily configure email-based authentication settings from the **App Settings > Authentication** in Altogic Designer. One critical parameter you need to specify is the Redirect URL, you can also customize this parameter from **App Settings > Authentication**. Finally, you can also customize the email message template from the A**pp Settings > Authentication > Messaget Templates**.
+
+
 ## Creating an Altogic App
 We will use Altogic as a backend service platform, so let’s visit [Altogic Designer](https://designer.altogic.com/) and create an account.
 ![Application](public/github/1-applications.png)
@@ -61,9 +69,6 @@ Click the **Home** icon at the left sidebar to copy the envUrl and clientKey.
 
 Once the user created successfully, our Vue.js app will route the user to the Verification page, and a verification email will be sent to the user’s email address. When the user clicks the link in the mail, the user will navigate to the redirect page to grant authentication rights. After successfully creating a session on the Redirect page, users will be redirected to the Home page.
 
-## Quick Tip
-> If you want, you can deactivate or customize the mail verification from **App Settings -> Authentication** in Logic Designer.
-
 ## Create a Vue 3 project
 Make sure you have an up-to-date version of Node.js installed, then run the following command in your command line
 ```bash
@@ -76,7 +81,7 @@ I showed you which options to choose in the image I will give you below. You can
 Then paste the code below into terminal and press enter.
 
 ```bash
-cd altogic-auth-example && npm i altogic && npm run dev
+cd altogic-auth-example && npm install altogic && npm run dev
 ```
 ## Open the project in your editor or IDE and Start Coding
 Select your favorite editor or IDE. I will use VSCode. You can use anything you want.

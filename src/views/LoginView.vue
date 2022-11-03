@@ -29,7 +29,6 @@ async function loginHandler() {
 
 <template>
 	<section class="flex flex-col items-center justify-center h-96 gap-4">
-		{{isMagicLink}}
 		<form @submit.prevent="loginHandler" class="flex flex-col gap-2 w-full md:w-96">
 			<h1 class="self-start text-3xl font-bold">Login to your account</h1>
 

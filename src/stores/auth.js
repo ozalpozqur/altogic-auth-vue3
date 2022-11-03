@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
 	}
 
 	const user = computed(() => _user.value);
-	const session = computed(() => _user.value);
+	const session = computed(() => _session.value);
 
 	return { user, session, setUser, setSession, logout };
 });
