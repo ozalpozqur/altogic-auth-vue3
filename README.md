@@ -1,4 +1,4 @@
-# How to Authenticate Email and Password Using React Native & Altogic
+# How to Authenticate Email and Password Using Vue 3 & Altogic
 
 
 ## Introduction
@@ -6,7 +6,7 @@
 
 Altogic has an authentication service that integrates and implements well in JAMstack apps. It has a ready-to-use [Javascript client library](https://www.npmjs.com/package/altogic), and it supports many authentication providers such as email/password, phone number, magic link, and OAuth providers like Google, Facebook, Twitter, Github, etc.,
 
-In this tutorial, we will implement email/password authentication with React Native and take a look at how as a React Native developer, we build applications and integrate with Altogic Authentication.
+In this tutorial, we will implement email/password authentication with Vue 3 and take a look at how as a Vue 3 developer, we build applications and integrate with Altogic Authentication.
 
 After completion of this tutorial, you will learn the following:
 
