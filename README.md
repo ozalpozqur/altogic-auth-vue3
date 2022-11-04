@@ -1,34 +1,33 @@
-# Authentication with Vue.js & Altogic
+# How to Authenticate Email and Password Using React Native & Altogic
+
 
 ## Introduction
-**Altogic** is a Backend as a Service (BaaS) platform and provides a variety of services in modern web and mobile development. Most of the modern applications using React or other libraries/frameworks require to know the identity of a user. And this necessity allows an app to securely save user data and session in the cloud and provide more personalized functionalities and views to users.
+[Altogic](https://www.altogic.com) is a Backend as a Service (BaaS) platform and provides a variety of services in modern web and mobile development. Most modern applications using React or other libraries/frameworks require knowing the identity of a user. And this necessity allows an app to securely save user data and session in the cloud and provide more personalized functionalities and views to users.
 
-Altogic has an Authentication service that integrates and implements well in JAMstack apps. It has a ready-to-use Javascript client library, and it supports many authentication providers such as email/password, phone number, magic link, and OAuth providers like Google, Facebook, Twitter, Github, etc.,
+Altogic has an authentication service that integrates and implements well in JAMstack apps. It has a ready-to-use [Javascript client library](https://www.npmjs.com/package/altogic), and it supports many authentication providers such as email/password, phone number, magic link, and OAuth providers like Google, Facebook, Twitter, Github, etc.,
 
-In this tutorial, we will implement email/password authentication with Vue.js and take a look how as a Vue developer we build applications and integrate with Altogic Authentication.
+In this tutorial, we will implement email/password authentication with React Native and take a look at how as a React Native developer, we build applications and integrate with Altogic Authentication.
 
-After completion of this tutorial, you will learn:
+After completion of this tutorial, you will learn the following:
 
-* How to create sample screens to display forms like login and signup.
-* How to create a home screen and authorize only logged-in users.
-* How to create different routes using the vue-router.
-* How to create an authentication flow by conditionally rendering between these pages whether a user is logged-in or not.
-* How to authenticate users using magic link
-* How to update user profile info and upload a profile picture
-* And we will integrate Altogic authentication with the email/password method.
+- How to create sample screens to display forms like login and signup.
+- How to create a home screen and authorize only logged-in users.
+- How to create different routes using the vue-router.
+- How to create an authentication flow by conditionally rendering between these pages whether a user is logged in.
+- How to authenticate users using the magic link
+- How to update user profile info and upload a profile picture
+- How to manage active sessions of a user
+- And we will integrate Altogic authentication with the email/password method.
   
 If you are new to Vue applications, this tutorial is definitely for you to understand the basics and even advanced concepts.
 
 
 ## Prerequisites
-* Altogic account (if you have not one yet, you can create an account by sign-in up to **Altogic**)
-* Familiarity with the command line
-* Any text editor or IDE (WebStorm, VsCode, Sublime, Atom, etc.)
-* Node.js version 16.0 or higher
-* Basic knowledge of Javascript
-* Basic knowledge of Vue 3
-* Basic knowledge of Vue 3 Composition API
-* Basic knowledge of Vue Router 4
+To complete this tutorial, make sure you have installed the following tools and utilities on your local development environment.
+- [VsCode](https://code.visualstudio.com/download)
+- [NodeJS](https://nodejs.org/en/download/)
+- [Vue.js App](https://vuejs.org/guide/quick-start.html#creating-a-vue-application)
+- You also need an Altogic Account. If you do not have one, you can create an account by [signin up for Altogic](https://designer.altogic.com/).
 
 ## How email-based sign-up works in Altogic
 By default, when you create an app in Altogic, email-based authentication is enabled. In addition, during email-based authentication, the email address of the user is also verified. Below you can find the flow of email and password-based sign-up process.
@@ -78,12 +77,12 @@ npm init vue@latest
 I showed you which options to choose in the image I will give you below. You can choose the same options as I did. 
 ![Alt text](public/github/terminal-preview.png "terminal preview")
 
-Then paste the code below into terminal and press enter.
-
+## Initializing Client Library
 ```bash
-cd altogic-auth-example && npm install altogic && npm run dev
+npm install altogic
 ```
-## Open the project in your editor or IDE and Start Coding
+
+## Open the project in your editor and Start Coding
 Select your favorite editor or IDE. I will use VSCode. You can use anything you want.
 ![Alt text](public/github/vscode.png "vscode preview")
 
@@ -95,6 +94,10 @@ Let's create some views in src/views folder as below for vue-router
 * AuthRedirectView.vue
 
 ![Alt text](public/github/views-folder.png "vscode preview")
+
+Let's create an .env file in the root folder of the project and add the following lines
+![Alt text](public/github/env-file.png "vscode preview")
+> Replace VITE_ALTOGIC_ENV_URL, VITE_ALTOGIC_CLIENT_KEY and VITE_ALTOGIC_API_KEY which is shown in the **Home** view of [Altogic Designer](https://designer.altogic.com/).
 
 ## Let's create an Altogic Client instance
 Create a folder named **libs** in the **src** folder of your project and put a file named **altogic.js** in it. Then paste the code below into the file.
@@ -108,7 +111,8 @@ const CLIENT_KEY = import.meta.env.VITE_ALTOGIC_CLIENT_KEY; // get the client ke
 const API_KEY = import.meta.env.VITE_ALTOGIC_API_KEY; // get the api key from .env file
 
 const altogic = createClient(ENV_URL, CLIENT_KEY, {
-	apiKey: API_KEY,
+    apiKey: API_KEY,
+    signInRedirect: '/login',
 });
 
 export default altogic;
@@ -230,7 +234,6 @@ If everything is ok, replace the codes I will give you with the ones in your pro
         <router-link class="border px-4 py-2 font-medium text-xl" :to="{ name: 'register' }">Register</router-link>
     </div>
 </template>
-
 ```
 
 ### Login Page
@@ -240,55 +243,56 @@ If everything is ok, replace the codes I will give you with the ones in your pro
 import { ref } from 'vue';
 import altogic from '@/libs/altogic';
 import { useAuthStore } from '@/stores/auth';
-import { useRouter } from 'vue-router';
+import {  useRouter } from 'vue-router';
 
 const auth = useAuthStore();
 const router = useRouter();
+
 const loading = ref(false);
 const email = ref('');
 const password = ref('');
 const errors = ref(null);
 
 async function loginHandler() {
-	loading.value = true;
-	errors.value = null;
-	const { user, session, errors: apiErrors } = await altogic.auth.signInWithEmail(email.value, password.value);
-	if (apiErrors) {
-		errors.value = apiErrors;
-		loading.value = false;
-	} else {
-		auth.setUser(user);
-		auth.setSession(session);
-		await router.push({ name: 'profile' });
-	}
+    loading.value = true;
+    errors.value = null;
+    const { user, session, errors: apiErrors } = await altogic.auth.signInWithEmail(email.value, password.value);
+    if (apiErrors) {
+        errors.value = apiErrors;
+        loading.value = false;
+    } else {
+        auth.setUser(user);
+        auth.setSession(session);
+        await router.push({ name: 'profile' });
+    }
 }
 </script>
 
 <template>
-	<section class="flex flex-col items-center justify-center h-96 gap-4">
-		<form @submit.prevent="loginHandler" class="flex flex-col gap-2 w-full md:w-96">
-			<h1 class="self-start text-3xl font-bold">Login to your account</h1>
+    <section class="flex flex-col items-center justify-center h-96 gap-4">
+        <form @submit.prevent="loginHandler" class="flex flex-col gap-2 w-full md:w-96">
+            <h1 class="self-start text-3xl font-bold">Login to your account</h1>
 
-			<div v-if="errors" class="bg-red-600 text-white text-[13px] p-2">
-				<p v-for="(error, index) in errors.items" :key="index">{{ error.message }}</p>
-			</div>
+            <div v-if="errors" class="bg-red-600 text-white text-[13px] p-2">
+                <p v-for="(error, index) in errors.items" :key="index">{{ error.message }}</p>
+            </div>
 
-			<input v-model="email" type="email" placeholder="Type your email" required />
-			<input v-model="password" type="password" placeholder="Type your password" required />
-			<div class="flex justify-between gap-2">
-				<router-link class="text-indigo-600" :to="{ name: 'register' }"
-				>Don't have an account? Register now</router-link
-				>
-				<button
-					:disabled="loading"
-					type="submit"
-					class="border py-2 px-3 border-gray-500 hover:bg-gray-500 hover:text-white transition"
-				>
-					Login
-				</button>
-			</div>
-		</form>
-	</section>
+            <input v-model="email" type="email" placeholder="Type your email" required />
+            <input v-model="password" type="password" placeholder="Type your password" required />
+            <div class="flex justify-between gap-4 items-start">
+                <router-link class="text-indigo-600" :to="{ name: 'register' }"
+                >Don't have an account? Register now</router-link
+                >
+                <button
+                    :disabled="loading"
+                    type="submit"
+                    class="border py-2 px-3 border-gray-500 hover:bg-gray-500 hover:text-white transition shrink-0"
+                >
+                    Login
+                </button>
+            </div>
+        </form>
+    </section>
 </template>
 ```
 
@@ -369,63 +373,64 @@ const errors = ref(null);
 const isNeedToVerify = ref(false);
 
 async function registerHandler() {
-	loading.value = true;
-	errors.value = null;
-	isNeedToVerify.value = false;
+    loading.value = true;
+    errors.value = null;
+    isNeedToVerify.value = false;
 
-	const {
-		user,
-		session,
-		errors: apiErrors,
-	} = await altogic.auth.signUpWithEmail(email.value, password.value, name.value);
+    const {
+        user,
+        session,
+        errors: apiErrors,
+    } = await altogic.auth.signUpWithEmail(email.value, password.value, name.value);
+    console.log(user, session, apiErrors);
 
-	if (apiErrors) {
-		errors.value = apiErrors;
-		return;
-	}
+    if (apiErrors) {
+        errors.value = apiErrors;
+        return;
+    }
 
-	email.value = '';
-	password.value = '';
-	name.value = '';
+    email.value = '';
+    password.value = '';
+    name.value = '';
 
-	if (!session) {
-		isNeedToVerify.value = true;
-		return;
-	}
+    if (!session) {
+        isNeedToVerify.value = true;
+        return;
+    }
 
-	auth.setSession(session);
-	auth.setUser(user);
-	await router.push({ name: 'profile' });
+    auth.setSession(session);
+    auth.setUser(user);
+    await router.push({ name: 'profile' });
 }
 </script>
 
 <template>
-	<section class="flex flex-col items-center justify-center h-96 gap-4">
-		<form @submit.prevent="registerHandler" class="flex flex-col gap-2 w-full md:w-96">
-			<h1 class="self-start text-3xl font-bold">Create an account</h1>
+    <section class="flex flex-col items-center justify-center h-96 gap-4">
+        <form @submit.prevent="registerHandler" class="flex flex-col gap-2 w-full md:w-96">
+            <h1 class="self-start text-3xl font-bold">Create an account</h1>
 
-			<div v-if="isNeedToVerify" class="bg-green-500 text-white p-2">
-				Your account has been created. Please check your email to verify your account.
-			</div>
+            <div v-if="isNeedToVerify" class="bg-green-500 text-white p-2">
+                Your account has been created. Please check your email to verify your account.
+            </div>
 
-			<div v-if="errors" class="bg-red-600 text-white text-[13px] p-2">
-				<p v-for="(error, index) in errors.items" :key="index">{{ error.message }}</p>
-			</div>
+            <div v-if="errors" class="bg-red-600 text-white text-[13px] p-2">
+                <p v-for="(error, index) in errors.items" :key="index">{{ error.message }}</p>
+            </div>
 
-			<input v-model="email" type="email" placeholder="Type your email" required />
-			<input v-model="name" type="text" placeholder="Type your name" required />
-			<input v-model="password" type="password" placeholder="Type your password" required />
-			<div class="flex justify-between gap-2">
-				<router-link class="text-indigo-600" :to="{ name: 'login' }">Already have an account?</router-link>
-				<button
-					type="submit"
-					class="border py-2 px-3 border-gray-500 hover:bg-gray-500 hover:text-white transition"
-				>
-					Register
-				</button>
-			</div>
-		</form>
-	</section>
+            <input v-model="email" type="email" placeholder="Type your email" required />
+            <input v-model="name" type="text" placeholder="Type your name" required />
+            <input v-model="password" type="password" placeholder="Type your password" required />
+            <div class="flex justify-between gap-4">
+                <router-link class="text-indigo-600" :to="{ name: 'login' }">Already have an account?</router-link>
+                <button
+                    type="submit"
+                    class="border py-2 px-3 border-gray-500 hover:bg-gray-500 hover:text-white transition shrink-0"
+                >
+                    Register
+                </button>
+            </div>
+        </form>
+    </section>
 </template>
 ```
 
@@ -433,16 +438,22 @@ async function registerHandler() {
 ```vue
 <!-- src/views/ProfileView.vue -->
 <script setup>
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '../stores/auth';
+import Avatar from '../components/Avatar.vue';
+import UserInfo from '../components/UserInfo.vue';
+import Sessions from '../components/Sessions.vue';
 const auth = useAuthStore();
 </script>
 
 <template>
-	<section class="h-screen py-4 space-y-4 flex flex-col text-center items-center">
-		<h1 class="text-3xl">Hello, {{ auth.user.name }}</h1>
-		<button @click="auth.logout" class="bg-gray-400 rounded py-2 px-3 text-white">Logout</button>
-	</section>
+    <section class="h-screen py-4 space-y-4 flex flex-col text-center items-center">
+        <Avatar />
+        <UserInfo />
+        <Sessions />
+        <button @click="auth.logout" class="bg-gray-400 rounded py-2 px-3 text-white">Logout</button>
+    </section>
 </template>
+
 ```
 
 ### Auth Redirect Page
@@ -489,7 +500,8 @@ async function loginWithToken() {
 </template>
 ```
 
-## Upload Profile Photo
+## Avatar Component for uploading profile picture
+```vue
 Let's create a Vue component for user can upload a profile photo.
 ```vue
 <!-- src/components/Avatar.vue -->
@@ -559,22 +571,121 @@ async function updateUser(data) {
 </script>
 ```
 
-## Use the Avatar component on the profile view
-And then we can add the component to the Profile page
+## UserInfo Component for updating username
 ```vue
-<!-- src/views/ProfileView.vue -->
 <script setup>
-import { useAuthStore } from '@/stores/auth';
-import Avatar from '@/components/Avatar.vue';
+import { useAuthStore } from '../stores/auth';
+import altogic from '../libs/altogic';
+import { ref } from 'vue';
 const auth = useAuthStore();
+
+const username = ref(auth?.user?.name);
+const loading = ref(false);
+const inputRef = ref(null);
+const changeMode = ref(false);
+const errors = ref(null);
+
+function openChangeMode() {
+	changeMode.value = true;
+	setTimeout(() => {
+		inputRef.value.focus();
+	}, 100);
+}
+
+async function saveName() {
+	loading.value = true;
+	errors.value = null;
+
+	const { data, errors: apiErrors } = await altogic.db
+		.model('users')
+		.object(auth.user._id)
+		.update({ name: username.value });
+
+	if (apiErrors) {
+		errors.value = apiErrors[0].message;
+	} else {
+		username.value = data.name;
+		auth.setUser(data);
+	}
+
+	loading.value = false;
+	changeMode.value = false;
+}
 </script>
 
 <template>
-	<section class="h-screen py-4 space-y-4 flex flex-col text-center items-center">
-		<Avatar />
-		<h1 class="text-3xl">Hello, {{ auth.user.name }}</h1>
-		<button @click="auth.logout" class="bg-gray-400 rounded py-2 px-3 text-white">Logout</button>
+	<section class="border p-4 w-full">
+		<div class="flex items-center justify-center" v-if="changeMode">
+			<input
+				@keyup.enter="saveName"
+				ref="inputRef"
+				type="text"
+				v-model="username"
+				class="border-none text-3xl text-center"
+			/>
+		</div>
+		<div class="space-y-4" v-else>
+			<h1 class="text-3xl">Hello, {{ auth?.user?.name }}</h1>
+			<button @click="openChangeMode" class="border p-2">Change name</button>
+		</div>
+		<div v-if="errors">
+			{{ errors }}
+		</div>
 	</section>
+</template>
+```
+
+## Sessions Component for managing sessions
+```vue
+<script setup>
+import altogic from '../libs/altogic';
+import { onMounted, ref } from 'vue';
+import { useAuthStore } from '../stores/auth';
+const sessions = ref([]);
+const auth = useAuthStore();
+
+onMounted(() => {
+	altogic.auth.getAllSessions().then(({ sessions: _sessions, errors }) => {
+		if (!errors) {
+			sessions.value = _sessions.map(session => {
+				return {
+					...session,
+					isCurrent: session.token === auth.session.token,
+				};
+			});
+		}
+	});
+});
+async function logoutSession(session) {
+	const { errors } = await altogic.auth.signOut(session.token);
+	if (!errors) {
+		sessions.value = sessions.value.filter(s => s.token !== session.token);
+	}
+}
+</script>
+
+<template>
+	<div class="border p-4 space-y-4">
+		<p class="text-3xl">All Sessions</p>
+		<ul class="flex flex-col gap-2">
+			<li :key="session.token" class="flex justify-between gap-12" v-for="session in sessions">
+				<div>
+					<span v-if="session?.isCurrent"> Current Session </span>
+					<span v-else> <strong>Device name: </strong>{{ session?.userAgent?.device?.family }}</span>
+				</div>
+				<div class="flex items-center gap-2">
+					<span>{{ new Date(session.creationDtm).toLocaleDateString('en-US') }}</span>
+					<button
+						v-if="!session?.isCurrent"
+						@click="logoutSession(session)"
+						class="border grid place-items-center p-2 h-8 w-8 aspect-square leading-none"
+					>
+						X
+					</button>
+				</div>
+			</li>
+		</ul>
+	</div>
 </template>
 ```
 
