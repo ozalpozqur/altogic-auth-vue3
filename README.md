@@ -92,6 +92,7 @@ Let's create some views in src/views folder as below for vue-router
 * RegisterView.vue 
 * ProfileView.vue
 * AuthRedirectView.vue
+* LoginWithMagicLinkView.vue
 
 ![Alt text](public/github/views-folder.png "vscode preview")
 
