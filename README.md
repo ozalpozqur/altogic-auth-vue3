@@ -77,9 +77,34 @@ npm init vue@latest
 I showed you which options to choose in the image I will give you below. You can choose the same options as I did. 
 ![Alt text](public/github/terminal-preview.png "terminal preview")
 
-## Initializing Client Library
+## Integrating with Altogic
+Our backend and frontend is now ready and running on the server. ✨
+
+Now, we can install the Altogic client library to our React app to connect our frontend with the backend.
 ```bash
+# using npm
 npm install altogic
+# OR is using yarn
+yarn add altogic
+```
+Let’s create a libs/ folder inside the src/ directory to add altogic.js file.
+
+Open altogic.js and paste below code block to export the altogic client instance.
+
+```js
+// src/libs/altogic.js
+import { createClient } from 'altogic';
+
+const ENV_URL = import.meta.env.VITE_ALTOGIC_ENV_URL; // get the env url from .env file
+const CLIENT_KEY = import.meta.env.VITE_ALTOGIC_CLIENT_KEY; // get the client key from .env file
+const API_KEY = import.meta.env.VITE_ALTOGIC_API_KEY; // get the api key from .env file
+
+const altogic = createClient(ENV_URL, CLIENT_KEY, {
+    apiKey: API_KEY,
+    signInRedirect: '/login',
+});
+
+export default altogic;
 ```
 
 ## Open the project in your editor and Start Coding
@@ -99,25 +124,6 @@ Let's create some views in src/views folder as below for vue-router
 Let's create an .env file in the root folder of the project and add the following lines
 ![Alt text](public/github/env-file.png "vscode preview")
 > Replace VITE_ALTOGIC_ENV_URL, VITE_ALTOGIC_CLIENT_KEY and VITE_ALTOGIC_API_KEY which is shown in the **Home** view of [Altogic Designer](https://designer.altogic.com/).
-
-## Let's create an Altogic Client instance
-Create a folder named **libs** in the **src** folder of your project and put a file named **altogic.js** in it. Then paste the code below into the file.
-
-```js
-// src/libs/altogic.js
-import { createClient } from 'altogic';
-
-const ENV_URL = import.meta.env.VITE_ALTOGIC_ENV_URL; // get the env url from .env file
-const CLIENT_KEY = import.meta.env.VITE_ALTOGIC_CLIENT_KEY; // get the client key from .env file
-const API_KEY = import.meta.env.VITE_ALTOGIC_API_KEY; // get the api key from .env file
-
-const altogic = createClient(ENV_URL, CLIENT_KEY, {
-    apiKey: API_KEY,
-    signInRedirect: '/login',
-});
-
-export default altogic;
-```
 
 ## Let's create authentication store
 Create a folder named **stores** in the **src** folder of your project and put a file named **auth.js** in it. Then paste the code below into the file.
