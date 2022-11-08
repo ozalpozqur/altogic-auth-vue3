@@ -27,7 +27,8 @@ async function saveName() {
 		.update({ name: username.value });
 
 	if (apiErrors) {
-		errors.value = apiErrors[0].message;
+		errors.value = apiErrors.items[0].message;
+		apiErrors;
 	} else {
 		username.value = data.name;
 		auth.setUser(data);
