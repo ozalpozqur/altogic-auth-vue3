@@ -230,8 +230,8 @@ export default router;
 
 ## Replacing the remaining files
 If everything is ok, replace the codes I will give you with the ones in your project.
- 
 ### Home Page
+In this page, we will show Login, Login With Magic Link and Register buttons.
 ```vue
 <!-- src/views/HomeView.vue -->
 <template>
@@ -244,6 +244,7 @@ If everything is ok, replace the codes I will give you with the ones in your pro
 ```
 
 ### Login Page
+In this page, we will show a form to log in with email and password. We will use Altogic's **altogic.auth.signInWithEmail()** function to log in.
 ```vue
 <!-- src/views/LoginView.vue -->
 <script setup>
@@ -304,6 +305,9 @@ async function loginHandler() {
 ```
 
 ### Login With Magic Link Page
+In this page, we will show a form to **log in with Magic Link** with only email. We will use Altogic's **altogic.auth.sendMagicLinkEmail()** function to log in.
+#### How Login With Magic Link works
+If there is a user matching the entered email address, this function sends a link to that user by mail. and if the link in the e-mail is clicked, the user is logged in.
 ```vue
 <!-- src/views/LoginWithMagicLinkView.vue -->
 <script setup>
@@ -362,6 +366,7 @@ async function loginHandler() {
 ```
 
 ### Register Page
+In this page, we will show a form to sign up with email and password. We will use Altogic's **altogic.auth.signUpWithEmail()** function to log in.
 ```vue
 <!-- src/views/RegisterView.vue -->
 <script setup>
@@ -442,6 +447,7 @@ async function registerHandler() {
 ```
 
 ### Profile Page
+In this page, we will show the user's profile. 
 ```vue
 <!-- src/views/ProfileView.vue -->
 <script setup>
@@ -460,7 +466,6 @@ const auth = useAuthStore();
         <button @click="auth.logout" class="bg-gray-400 rounded py-2 px-3 text-white">Logout</button>
     </section>
 </template>
-
 ```
 
 ### Auth Redirect Page
@@ -508,7 +513,7 @@ async function loginWithToken() {
 ```
 
 ## Avatar Component for uploading profile picture
-```vue
+In this component, we will use Altogic's **altogic.storage.bucket('root').upload()** function to upload the image to the storage.
 Let's create a Vue component for user can upload a profile photo.
 ```vue
 <!-- src/components/Avatar.vue -->
@@ -541,7 +546,7 @@ const loading = ref(false);
 const errors = ref(null);
 
 const userPicture = computed(() => {
-	return auth.user.profilePicture || `https://ui-avatars.com/api/?name=${auth.user.name}&background=0D8ABC&color=fff`;
+	return auth.user.profilePicture || `https://ui-avatars.com/api/?name=${auth.user.name}`;
 });
 
 async function changeHandler(e) {
@@ -579,6 +584,7 @@ async function updateUser(data) {
 ```
 
 ## UserInfo Component for updating username
+In this component, we will use Altogic's database operations to update the user's name.
 ```vue
 <script setup>
 import { useAuthStore } from '../stores/auth';
@@ -609,7 +615,7 @@ async function saveName() {
 		.update({ name: username.value });
 
 	if (apiErrors) {
-		errors.value = apiErrors[0].message;
+		errors.value = apiErrors.items[0].message;
 	} else {
 		username.value = data.name;
 		auth.setUser(data);
@@ -643,6 +649,7 @@ async function saveName() {
 ```
 
 ## Sessions Component for managing sessions
+In this component, we will use Altogic's **altogic.auth.getAllSessions()** to get the user's sessions and delete them.
 ```vue
 <script setup>
 import altogic from '../libs/altogic';
