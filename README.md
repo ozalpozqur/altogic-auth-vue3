@@ -513,8 +513,7 @@ async function loginWithToken() {
 ```
 
 ## Avatar Component for uploading profile picture
-In this component, we will use Altogic's **altogic.storage.bucket('root').upload()** function to upload the image to the storage.
-Let's create a Vue component for user can upload a profile photo.
+Open Avatar.js and paste the below code to create an avatar for the user. For convenience, we will be using the user's name as the name of the uploaded file and upload the profile picture to the root directory of our app storage. If needed you can create different buckets for each user or a generic bucket to store all provided photos of users. The Altogic Client Library has all the methods to manage buckets and files.
 ```vue
 <!-- src/components/Avatar.vue -->
 <template>
@@ -567,7 +566,7 @@ async function changeHandler(e) {
 }
 
 async function uploadAvatar(file) {
-	const { data, errors } = await altogic.storage.bucket('root').upload(file.name, file);
+	const { data, errors } = await altogic.storage.bucket('root').upload(auth.user.name, file);
 	if (errors) {
 		throw new Error("Couldn't upload avatar, please try again later");
 	}
