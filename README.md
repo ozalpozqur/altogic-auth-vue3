@@ -594,7 +594,7 @@ async function updateUser(data) {
 </script>
 ```
 
-## UserInfo Component for updating username
+## UserInfo Component for updating user's name
 In this component, we will use Altogic's database operations to update the user's name.
 ```vue
 <script setup>
