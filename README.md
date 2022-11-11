@@ -1,6 +1,5 @@
 # How to Authenticate Email and Password Using Vue 3 & Altogic
 
-
 ## Introduction
 [Altogic](https://www.altogic.com) is a Backend as a Service (BaaS) platform and provides a variety of services in modern web and mobile development. Most modern applications using React or other libraries/frameworks require knowing the identity of a user. And this necessity allows an app to securely save user data and session in the cloud and provide more personalized functionalities and views to users.
 
@@ -12,22 +11,14 @@ After completion of this tutorial, you will learn the following:
 
 - How to create sample screens to display forms like login and signup.
 - How to create a home screen and authorize only logged-in users.
-- How to create different routes using the vue-router.
 - How to create an authentication flow by conditionally rendering between these pages whether a user is logged in.
 - How to authenticate users using the magic link
 - How to update user profile info and upload a profile picture
 - How to manage active sessions of a user
 - And we will integrate Altogic authentication with the email/password method.
-  
+
 If you are new to Vue applications, this tutorial is definitely for you to understand the basics and even advanced concepts.
 
-
-## Prerequisites
-To complete this tutorial, make sure you have installed the following tools and utilities on your local development environment.
-- [VsCode](https://code.visualstudio.com/download)
-- [NodeJS](https://nodejs.org/en/download/)
-- [Vue.js App](https://vuejs.org/guide/quick-start.html#creating-a-vue-application)
-- You also need an Altogic Account. If you do not have one, you can create an account by [signin up for Altogic](https://designer.altogic.com/).
 
 ## How email-based sign-up works in Altogic
 By default, when you create an app in Altogic, email-based authentication is enabled. In addition, during email-based authentication, the email address of the user is also verified. Below you can find the flow of email and password-based sign-up process.
@@ -35,6 +26,13 @@ By default, when you create an app in Altogic, email-based authentication is ena
 ![Authentication Flow](public/github/auth-flow.png)
 
 If email verification is disabled, then after step 2, Altogic immediately returns a new session to the user, meaning that steps after step #2 in the above flow are not executed. You can easily configure email-based authentication settings from the **App Settings > Authentication** in Altogic Designer. One critical parameter you need to specify is the Redirect URL, you can also customize this parameter from **App Settings > Authentication**. Finally, you can also customize the email message template from the A**pp Settings > Authentication > Messaget Templates**.
+
+## Prerequisites
+To complete this tutorial, make sure you have installed the following tools and utilities on your local development environment.
+- [VsCode](https://code.visualstudio.com/download)
+- [NodeJS](https://nodejs.org/en/download/)
+- [Vue.js App](https://vuejs.org/guide/quick-start.html)
+- You also need an Altogic Account. If you do not have one, you can create an account by [signin up for Altogic](https://designer.altogic.com/).
 
 
 ## Creating an Altogic App
@@ -52,21 +50,25 @@ Click + New app and follow the instructions;
 
 ![Create App](public/github/2-create-app.png)
 
-Then click Next and select Basic Authentication template. This template is creates a default user model for your app which is required by [Altogic Client Library](https://github.com/altogic/altogic-js) to store user data and manage authentication.
+Then click Next and select Basic template. **This template creates a default user data model for your app which is required by [Altogic Client Library](https://www.npmjs.com/package/altogic) to store user data and manage authentication.** You can add additional user fields to this data model (e.g., name, surname, gender, birthdate) and when calling the `signUpWithEmail` method of the client library you can pass these additional data.
 
-Then click Next and select Basic Authentication template. This template is based on session authentication and highly recommended to secure your apps.
+
 ![Choose Template](public/github/3-choose-template.png)
+> **Tip:** If you do not select the basic template, instead selected the blank app template the user data model will not be created for your app. In order to use the Altogic Client Library's authentication methods you need a user data model to store the user data. You can easily create a new data model manually and from the **App Settings > Authentication** mark this new data model as your user data model.
+
 
 Then click Next to confirm and create an app.
 
-Awesome! We have created our application; now click/tap on the **newly created app to launch the Designer.**
+Awesome! We have created our application; now click/tap on the **newly created app to launch the Designer.** In order to access the app and use the Altogic client library, we should get `envUrl` and `clientKey` of this app. You can use any one of the API base URLs specified for your app environment as your envUrl.
 
-> This is the only configuration we need to do in Altogic Designer. In order to access the app and use the Altogic client library, we should get envUrl and clientKey of this app.
-Click the **Home** icon at the left sidebar to copy the envUrl and clientKey.
+Click the **Home** icon at the left sidebar to copy the `envUrl` and `clientKey`.
 
 ![Client Keys](public/github/4-client-keys.png)
+Once the user is created successfully, our Next.js app will route the user to the Verification page, and a verification email will be sent to the user's email address. When the user clicks the link in the mail, the user will navigate to the redirect page to grant authentication rights. After successfully creating a session on the Redirect page, users will be redirected to the Home page.
 
-Once the user created successfully, our Vue.js app will route the user to the Verification page, and a verification email will be sent to the user’s email address. When the user clicks the link in the mail, the user will navigate to the redirect page to grant authentication rights. After successfully creating a session on the Redirect page, users will be redirected to the Home page.
+> If you want, you can deactivate or customize the mail verification from **App Settings -> Authentication** in Logic Designer.
+
+![Mail](public/github/15-mail.png)
 
 ## Create a Vue 3 project
 Make sure you have an up-to-date version of Node.js installed, then run the following command in your command line
@@ -126,7 +128,11 @@ Let's create an .env file in the root folder of the project and add the followin
 > Replace VITE_ALTOGIC_ENV_URL, VITE_ALTOGIC_CLIENT_KEY and VITE_ALTOGIC_API_KEY which is shown in the **Home** view of [Altogic Designer](https://designer.altogic.com/).
 
 ## Let's create authentication store
-Create a folder named **stores** in the **src** folder of your project and put a file named **auth.js** in it. Then paste the code below into the file.
+Create a folder named `stores` in the `src/` folder of your project and put a file named **auth.js** in it. 
+
+In this file, we will create a store for authentication. We will use this store to manage the authentication state of our app.
+
+Then paste the code below into the file.
 
 ```js
 // src/stores/auth.js
@@ -162,7 +168,10 @@ export const useAuthStore = defineStore('auth', () => {
 ```
 
 ## Let's create router
-Open the **src/router/index.js** file and paste the code below into the file.
+Open the `src/router/index.js` file and paste the code below into the file.
+
+In this file, we will create a router for our app. We will use this router to navigate between pages.
+
 ```js
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
@@ -244,7 +253,7 @@ In this page, we will show Login, Login With Magic Link and Register buttons.
 ```
 
 ### Login Page
-In this page, we will show a form to log in with email and password. We will use Altogic's **altogic.auth.signInWithEmail()** function to log in.
+In this page, we will show a form to log in with email and password. We will use Altogic's `altogic.auth.signInWithEmail()` function to log in.
 ```vue
 <!-- src/views/LoginView.vue -->
 <script setup>
@@ -305,8 +314,8 @@ async function loginHandler() {
 ```
 
 ### Login With Magic Link Page
-In this page, we will show a form to **log in with Magic Link** with only email. We will use Altogic's **altogic.auth.sendMagicLinkEmail()** function to log in.
-#### How Login With Magic Link works
+In this page, we will show a form to **log in with Magic Link** with only email. We will use Altogic's `altogic.auth.sendMagicLinkEmail()`  function to send the magic link to the user's email.
+
 If there is a user matching the entered email address, this function sends a link to that user by mail. and if the link in the e-mail is clicked, the user is logged in.
 ```vue
 <!-- src/views/LoginWithMagicLinkView.vue -->
@@ -366,7 +375,7 @@ async function loginHandler() {
 ```
 
 ### Register Page
-In this page, we will show a form to sign up with email and password. We will use Altogic's **altogic.auth.signUpWithEmail()** function to log in.
+In this page, we will show a form to sign up with email and password. We will use Altogic's `altogic.auth.signUpWithEmail()` function to log in.
 ```vue
 <!-- src/views/RegisterView.vue -->
 <script setup>
@@ -470,6 +479,9 @@ const auth = useAuthStore();
 
 ### Auth Redirect Page
 We use this page for verify the user's email address and **Login With Magic Link Authentication**.
+
+We will use Altogic's `altogic.auth.getAuthGrant()` function to log in with the handled token from the URL.
+
 ```vue
 <!-- src/views/AuthRedirectView.vue -->
 <script setup>
@@ -648,7 +660,7 @@ async function saveName() {
 ```
 
 ## Sessions Component for managing sessions
-In this component, we will use Altogic's **altogic.auth.getAllSessions()** to get the user's sessions and delete them.
+In this component, we will use Altogic's `altogic.auth.getAllSessions()`  to get the user's sessions and delete them.
 ```vue
 <script setup>
 import altogic from '../libs/altogic';
