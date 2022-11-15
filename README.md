@@ -26,7 +26,6 @@ By default, when you create an app in Altogic, email-based authentication is ena
 ![Authentication Flow](public/github/auth-flow.png)
 
 If email verification is disabled, then after step 2, Altogic immediately returns a new session to the user, meaning that steps after step #2 in the above flow are not executed. You can easily configure email-based authentication settings from the **App Settings > Authentication** in Altogic Designer. One critical parameter you need to specify is the Redirect URL, you can also customize this parameter from **App Settings > Authentication**. Finally, you can also customize the email message template from the A**pp Settings > Authentication > Messaget Templates**.
-> For frontend apps that use server-side rendering, the session token needs to be stored in an HTTP cookie so that the client browser and the frontend server can exchange session information. Otherwise, the session information can be lost, and the Altogic Client library methods that require a session token can fail.
 
 ## Prerequisites
 To complete this tutorial, make sure you have installed the following tools and utilities on your local development environment.
@@ -382,9 +381,8 @@ In this page, we will show a form to sign up with email and password. We will us
 
 We will save session and user info to state if the api returns session. Then, user will be redirected to profile page.
 
-`signUpWithEmail` function can accept optional  third parameter data to save the user's profile. We will save the user's name to the database in this example.
-
 If `signUpWithEmail` does not return session, it means user need to confirm email, so we will show the success message.
+> **Note:** `signUpWithEmail` function can accept optional  third parameter data to save the user's profile. We will save the user's name to the database in this example.
 
 ```vue
 <!-- src/views/RegisterView.vue -->
