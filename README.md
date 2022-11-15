@@ -602,6 +602,7 @@ async function updateUser(data) {
 ## UserInfo Component for updating user's name
 In this component, we will use Altogic's database operations to update the user's name.
 ```vue
+<!-- src/components/UserInfo.vue -->
 <script setup>
 import { useAuthStore } from '../stores/auth';
 import altogic from '../libs/altogic';
@@ -667,6 +668,7 @@ async function saveName() {
 ## Sessions Component for managing sessions
 In this component, we will use Altogic's `altogic.auth.getAllSessions()`  to get the user's sessions and delete them.
 ```vue
+<!-- src/components/Sessions.vue -->
 <script setup>
 import altogic from '../libs/altogic';
 import { onMounted, ref } from 'vue';
