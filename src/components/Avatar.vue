@@ -1,23 +1,3 @@
-<template>
-	<div>
-		<figure class="flex flex-col gap-4 items-center justify-center py-2">
-			<picture class="border rounded-full w-24 h-24 overflow-hidden">
-				<img class="object-cover w-full h-full" :src="userPicture" :alt="auth.user.name" />
-			</picture>
-		</figure>
-		<div class="flex flex-col gap-4 justify-center items-center">
-			<label class="border p-2 cursor-pointer">
-				<span v-if="loading">Uploading...</span>
-				<span v-else>Change Avatar</span>
-				<input :disabled="loading" class="hidden" type="file" accept="image/*" @change="changeHandler" />
-			</label>
-			<div class="bg-red-500 p-2 text-white" v-if="errors">
-				{{ errors }}
-			</div>
-		</div>
-	</div>
-</template>
-
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import altogic from '@/libs/altogic';
@@ -48,7 +28,7 @@ async function changeHandler(e) {
 }
 
 async function uploadAvatar(file) {
-	const { data, errors } = await altogic.storage.bucket('root').upload(file.name, file);
+	const { data, errors } = await altogic.storage.bucket('root').upload(`user_${auth.user_id}`, file);
 	if (errors) {
 		throw new Error("Couldn't upload avatar, please try again later");
 	}
@@ -62,3 +42,23 @@ async function updateUser(data) {
 	return user;
 }
 </script>
+
+<template>
+	<div>
+		<figure class="flex flex-col gap-4 items-center justify-center py-2">
+			<picture class="border rounded-full w-24 h-24 overflow-hidden">
+				<img class="object-cover w-full h-full" :src="userPicture" :alt="auth.user.name" />
+			</picture>
+		</figure>
+		<div class="flex flex-col gap-4 justify-center items-center">
+			<label class="border p-2 cursor-pointer">
+				<span v-if="loading">Uploading...</span>
+				<span v-else>Change Avatar</span>
+				<input :disabled="loading" class="hidden" type="file" accept="image/*" @change="changeHandler" />
+			</label>
+			<div class="bg-red-500 p-2 text-white" v-if="errors">
+				{{ errors }}
+			</div>
+		</div>
+	</div>
+</template>

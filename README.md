@@ -1,9 +1,9 @@
-# How to Authenticate Email and Password Using Vue 3 & Altogic
+# Email & Password Based Authentication Using Vue 3 & Altogic
 
 ## Introduction
-[Altogic](https://www.altogic.com) is a Backend as a Service (BaaS) platform and provides a variety of services in modern web and mobile development. Most modern applications using React or other libraries/frameworks require knowing the identity of a user. And this necessity allows an app to securely save user data and session in the cloud and provide more personalized functionalities and views to users.
+[Altogic](https://www.altogic.com) is a Backend as a Service (BaaS) platform and provides a variety of services in modern web and mobile development. Most modern applications using Vue or other libraries/frameworks require knowing the identity of a user. And this necessity allows an app to securely save user data and session in the cloud and provide more personalized functionalities and views to users.
 
-Altogic has an authentication service that integrates and implements well in JAMstack apps. It has a ready-to-use [Javascript client library](https://www.npmjs.com/package/altogic), and it supports many authentication providers such as email/password, phone number, magic link, and OAuth providers like Google, Facebook, Twitter, Github, etc.,
+Altogic has an authentication service that integrates and implements well in JAMstack apps. It has a ready-to-use [Javascript client library](https://www.npmjs.com/package/altogic), and it supports many authentication providers such as email/password, phone number, magic link, and OAuth providers like Google, Facebook, Twitter, Github, Apple etc.,
 
 In this tutorial, we will implement email/password authentication with Vue 3 and take a look at how as a Vue 3 developer, we build applications and integrate with Altogic Authentication.
 
@@ -26,6 +26,7 @@ By default, when you create an app in Altogic, email-based authentication is ena
 ![Authentication Flow](public/github/auth-flow.png)
 
 If email verification is disabled, then after step 2, Altogic immediately returns a new session to the user, meaning that steps after step #2 in the above flow are not executed. You can easily configure email-based authentication settings from the **App Settings > Authentication** in Altogic Designer. One critical parameter you need to specify is the Redirect URL, you can also customize this parameter from **App Settings > Authentication**. Finally, you can also customize the email message template from the A**pp Settings > Authentication > Messaget Templates**.
+> For frontend apps that use server-side rendering, the session token needs to be stored in an HTTP cookie so that the client browser and the frontend server can exchange session information. Otherwise, the session information can be lost, and the Altogic Client library methods that require a session token can fail.
 
 ## Prerequisites
 To complete this tutorial, make sure you have installed the following tools and utilities on your local development environment.
@@ -68,7 +69,7 @@ Once the user is created successfully, our Next.js app will route the user to th
 
 > If you want, you can deactivate or customize the mail verification from **App Settings -> Authentication** in Logic Designer.
 
-![Mail](public/github/15-mail.png)
+![Mail](public/github/mail.png)
 
 ## Create a Vue 3 project
 Make sure you have an up-to-date version of Node.js installed, then run the following command in your command line
@@ -76,20 +77,24 @@ Make sure you have an up-to-date version of Node.js installed, then run the foll
 npm init vue@latest
 ```
 
-I showed you which options to choose in the image I will give you below. You can choose the same options as I did. 
 ![Alt text](public/github/terminal-preview.png "terminal preview")
+
+Open altogic-auth-example folder in Visual Studio Code:
+```bash
+code altogic-auth-example
+```
 
 ## Integrating with Altogic
 Our backend and frontend is now ready and running on the server. ✨
 
-Now, we can install the Altogic client library to our React app to connect our frontend with the backend.
+Now, we can install the Altogic client library to our Vue app to connect our frontend with the backend.
 ```bash
 # using npm
 npm install altogic
 # OR is using yarn
 yarn add altogic
 ```
-Let’s create a libs/ folder inside the src/ directory to add altogic.js file.
+Let’s create a `libs/` folder inside the `src/` directory to add **altogic.js** file.
 
 Open altogic.js and paste below code block to export the altogic client instance.
 
@@ -97,22 +102,20 @@ Open altogic.js and paste below code block to export the altogic client instance
 // src/libs/altogic.js
 import { createClient } from 'altogic';
 
-const ENV_URL = import.meta.env.VITE_ALTOGIC_ENV_URL; // get the env url from .env file
-const CLIENT_KEY = import.meta.env.VITE_ALTOGIC_CLIENT_KEY; // get the client key from .env file
-const API_KEY = import.meta.env.VITE_ALTOGIC_API_KEY; // get the api key from .env file
+const ENV_URL = ''; // replace with your envUrl
+const CLIENT_KEY = ''; // replace with your clientKey
 
 const altogic = createClient(ENV_URL, CLIENT_KEY, {
-    apiKey: API_KEY,
     signInRedirect: '/login',
 });
 
 export default altogic;
 ```
+> Replace ENV_URL and CLIENT_KEY which is shown in the **Home** view of [Altogic Designer](https://designer.altogic.com/).
 
-## Open the project in your editor and Start Coding
-Select your favorite editor or IDE. I will use VSCode. You can use anything you want.
-![Alt text](public/github/vscode.png "vscode preview")
+> `signInRedirect` is the sign in page URL to redirect the user when user's session becomes invalid. Altogic client library observes the responses of the requests made to your app backend. If it detects a response with an error code of missing or invalid session token, it can redirect the users to this signin url.
 
+## Create Routes
 Let's create some views in src/views folder as below for vue-router
 * HomeView.vue
 * LoginView.vue
@@ -124,11 +127,9 @@ Let's create some views in src/views folder as below for vue-router
 ![Alt text](public/github/views-folder.png "vscode preview")
 
 Let's create an .env file in the root folder of the project and add the following lines
-![Alt text](public/github/env-file.png "vscode preview")
-> Replace VITE_ALTOGIC_ENV_URL, VITE_ALTOGIC_CLIENT_KEY and VITE_ALTOGIC_API_KEY which is shown in the **Home** view of [Altogic Designer](https://designer.altogic.com/).
 
 ## Let's create authentication store
-Create a folder named `stores` in the `src/` folder of your project and put a file named **auth.js** in it. 
+Create a folder named `stores/` in the `src/` folder of your project and put a file named **auth.js** in it. 
 
 In this file, we will create a store for authentication. We will use this store to manage the authentication state of our app.
 
@@ -253,7 +254,7 @@ In this page, we will show Login, Login With Magic Link and Register buttons.
 ```
 
 ### Login Page
-In this page, we will show a form to log in with email and password. We will use Altogic's `altogic.auth.signInWithEmail()` function to log in.
+In this page, we will show a form to log in with email and password. We will use Altogic's `altogic.auth.signInWithEmail()` function to sign-in.
 ```vue
 <!-- src/views/LoginView.vue -->
 <script setup>
@@ -314,9 +315,11 @@ async function loginHandler() {
 ```
 
 ### Login With Magic Link Page
-In this page, we will show a form to **log in with Magic Link** with only email. We will use Altogic's `altogic.auth.sendMagicLinkEmail()`  function to send the magic link to the user's email.
+In this page, we will show a form to **log in with Magic Link** with only email. We will use Altogic's `altogic.auth.sendMagicLinkEmail()` function to sending magic link to user's email.
 
-If there is a user matching the entered email address, this function sends a link to that user by mail. and if the link in the e-mail is clicked, the user is logged in.
+
+When the user clicks on the magic link in the email, Altogic verifies the validity of the magic link and, if successful, redirects the user to the redirect URL specified in your app authentication settings with an access token in a query string parameter named `access_token` The magic link flows in a similar way to the sign-up process. We use the `getAuthGrant()` method to create a new session and associated `sessionToken`.
+
 ```vue
 <!-- src/views/LoginWithMagicLinkView.vue -->
 <script setup>
@@ -375,7 +378,14 @@ async function loginHandler() {
 ```
 
 ### Register Page
-In this page, we will show a form to sign up with email and password. We will use Altogic's `altogic.auth.signUpWithEmail()` function to log in.
+In this page, we will show a form to sign up with email and password. We will use Altogic's `altogic.auth.signUpWithEmail()` function to sign-up.
+
+We will save session and user info to state if the api returns session. Then, user will be redirected to profile page.
+
+`signUpWithEmail` function can accept optional  third parameter data to save the user's profile. We will save the user's name to the database in this example.
+
+If `signUpWithEmail` does not return session, it means user need to confirm email, so we will show the success message.
+
 ```vue
 <!-- src/views/RegisterView.vue -->
 <script setup>
@@ -478,10 +488,7 @@ const auth = useAuthStore();
 ```
 
 ### Auth Redirect Page
-We use this page for verify the user's email address and **Login With Magic Link Authentication**.
-
-We will use Altogic's `altogic.auth.getAuthGrant()` function to log in with the handled token from the URL.
-
+In this page we use the `getAuthGrant()` method to create a new session and associated `sessionToken` for verify email or sign in with magic link.
 ```vue
 <!-- src/views/AuthRedirectView.vue -->
 <script setup>
@@ -525,29 +532,9 @@ async function loginWithToken() {
 ```
 
 ## Avatar Component for uploading profile picture
-Open Avatar.js and paste the below code to create an avatar for the user. For convenience, we will be using the user's name as the name of the uploaded file and upload the profile picture to the root directory of our app storage. If needed you can create different buckets for each user or a generic bucket to store all provided photos of users. The Altogic Client Library has all the methods to manage buckets and files.
+Open Avatar.js and paste the below code to create an avatar for the user. For convenience, we will be using the user's `_id` as the name of the uploaded file and upload the profile picture to the root directory of our app storage. If needed you can create different buckets for each user or a generic bucket to store all provided photos of users. The Altogic Client Library has all the methods to manage buckets and files.
 ```vue
 <!-- src/components/Avatar.vue -->
-<template>
-	<div>
-		<figure class="flex flex-col gap-4 items-center justify-center py-2">
-			<picture class="border rounded-full w-24 h-24 overflow-hidden">
-				<img class="object-cover w-full h-full" :src="userPicture" :alt="auth.user.name" />
-			</picture>
-		</figure>
-		<div class="flex flex-col gap-4 justify-center items-center">
-			<label class="border p-2 cursor-pointer">
-				<span v-if="loading">Uploading...</span>
-				<span v-else>Change Avatar</span>
-				<input :disabled="loading" class="hidden" type="file" accept="image/*" @change="changeHandler" />
-			</label>
-			<div class="bg-red-500 p-2 text-white" v-if="errors">
-				{{ errors }}
-			</div>
-		</div>
-	</div>
-</template>
-
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import altogic from '@/libs/altogic';
@@ -557,41 +544,61 @@ const loading = ref(false);
 const errors = ref(null);
 
 const userPicture = computed(() => {
-	return auth.user.profilePicture || `https://ui-avatars.com/api/?name=${auth.user.name}`;
+    return auth.user.profilePicture || `https://ui-avatars.com/api/?name=${auth.user.name}&background=0D8ABC&color=fff`;
 });
 
 async function changeHandler(e) {
-	const file = e.target.files[0];
-	e.target.value = null;
-	if (!file) return;
-	loading.value = true;
-	errors.value = null;
-	try {
-		const { publicPath } = await uploadAvatar(file);
-		const user = await updateUser({ profilePicture: publicPath });
-		auth.setUser(user);
-	} catch (error) {
-		errors.value = error.message;
-	} finally {
-		loading.value = false;
-	}
+    const file = e.target.files[0];
+    e.target.value = null;
+    if (!file) return;
+    loading.value = true;
+    errors.value = null;
+    try {
+        const { publicPath } = await uploadAvatar(file);
+        const user = await updateUser({ profilePicture: publicPath });
+        auth.setUser(user);
+    } catch (error) {
+        errors.value = error.message;
+    } finally {
+        loading.value = false;
+    }
 }
 
 async function uploadAvatar(file) {
-	const { data, errors } = await altogic.storage.bucket('root').upload(auth.user.name, file);
-	if (errors) {
-		throw new Error("Couldn't upload avatar, please try again later");
-	}
-	return data;
+    const { data, errors } = await altogic.storage.bucket('root').upload(`user_${auth.user_id}`, file);
+    if (errors) {
+        throw new Error("Couldn't upload avatar, please try again later");
+    }
+    return data;
 }
 async function updateUser(data) {
-	const { data: user, errors } = await altogic.db.model('users').object(auth.user._id).update(data);
-	if (errors) {
-		throw new Error("Couldn't update user, please try again later");
-	}
-	return user;
+    const { data: user, errors } = await altogic.db.model('users').object(auth.user._id).update(data);
+    if (errors) {
+        throw new Error("Couldn't update user, please try again later");
+    }
+    return user;
 }
 </script>
+
+<template>
+    <div>
+        <figure class="flex flex-col gap-4 items-center justify-center py-2">
+            <picture class="border rounded-full w-24 h-24 overflow-hidden">
+                <img class="object-cover w-full h-full" :src="userPicture" :alt="auth.user.name" />
+            </picture>
+        </figure>
+        <div class="flex flex-col gap-4 justify-center items-center">
+            <label class="border p-2 cursor-pointer">
+                <span v-if="loading">Uploading...</span>
+                <span v-else>Change Avatar</span>
+                <input :disabled="loading" class="hidden" type="file" accept="image/*" @change="changeHandler" />
+            </label>
+            <div class="bg-red-500 p-2 text-white" v-if="errors">
+                {{ errors }}
+            </div>
+        </div>
+    </div>
+</template>
 ```
 
 ## UserInfo Component for updating user's name

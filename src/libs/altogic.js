@@ -1,11 +1,9 @@
 import { createClient } from 'altogic';
 
-const ENV_URL = import.meta.env.VITE_ALTOGIC_ENV_URL;
-const CLIENT_KEY = import.meta.env.VITE_ALTOGIC_CLIENT_KEY;
-const API_KEY = import.meta.env.VITE_ALTOGIC_API_KEY;
+const ENV_URL = 'https://pn45-90sr.c1-europe.altogic.com';
+const CLIENT_KEY = '7427b15c87f34ad9a80e16a382d7fd06';
 
 const altogic = createClient(ENV_URL, CLIENT_KEY, {
-	apiKey: API_KEY,
 	signInRedirect: '/login',
 });
 
